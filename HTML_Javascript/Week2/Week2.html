@@ -26,7 +26,13 @@
             width: 100px;
             margin-left: auto;
             margin-right: auto;
+            border: 3px solid rgb(8, 16, 24);
 
+        }
+        h1, h2{
+            font-family: "Deadbeat";
+            font-weight: normal;
+            color: rgb(6, 37, 37);
         }
     </style>
 </head>
@@ -39,7 +45,10 @@
         <br>
         <h2>Button Clicker</h2>
         <h3 id="output">0</h3>
-        <input type="button" value="Click Me!!" id="btn">
+        <button type="button" id="btn" style="background: none; border: none;">
+            <img src="download.png">
+        </button>
+        <!-- <input type="button" value="Click Me!!" id="btn"> -->
         <input type="button" value="Clear Clicks" id="btn-reset">
     </div>
 
@@ -61,12 +70,15 @@
         var clickerButton = document.querySelector("#btn");
         var clearButton = document.querySelector("#btn-reset");
         var clickerOutput = document.querySelector("#output");
+        // var clickerSound = new Audio["Audio/deltarune-menu-move.mp3"];
 
         var numberOfClicks = 0;
 
         clickerButton.addEventListener("click", function () {
             numberOfClicks++;
             updateClickerDisplay();
+            clickerSound.currentTime = 0;
+            clickerSound.play();
 
             if (numberOfClicks == 25)
                 alert("You made 25 clicks!");
