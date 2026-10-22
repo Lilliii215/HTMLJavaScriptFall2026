@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Week 3 Drawing using the HTML Canvas</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        #container {
+            width: 800px;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <h1> Week 3 Lab - Drawing on HTML Canvas</h1>
+        <canvas id="canvas" width="800" height="600" style="border: 1px solid black;">
+            Your browser does not support the HTML Canvas element
+        </canvas>
+    </div>
+
+    <!--In Document JavaScript-->
+    <script>
+        //These are the common variables for setting up the canvas
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+
+        //draw a square
+        ctx.fillStyle = "#ff0000";
+        ctx.fillRect(canvas.width / 2 - 25, canvas.height / 2 - 25, 50, 50);
+
+        //draw a square
+        ctx.fillStyle = "yellow";
+        ctx.fillRect(750, canvas.height / 2, 50, 50);
+
+        //draw a square
+        ctx.fillStyle = "green";
+        ctx.fillRect(0, canvas.height - 50, 50, 50);
+
+        //draw a square
+        ctx.fillStyle = "pink";
+        ctx.fillRect(0, 0, 50, 50);
+
+        //draw a square
+        ctx.fillStyle = "black";
+        ctx.fillRect(750, 0, 50, 50);
+
+        //draw a square
+        ctx.fillStyle = "blue";
+        ctx.fillRect(750, canvas.height - 50, 50, 50);
+        //Outline Box
+        ctx.strokeStyle = "red";
+        ctx.strokeRect(750, canvas.height - 50, 50, 50);
+
+
+        //Lets draw some lines
+        ctx.strokeStyle = "Black";
+        ctx.lineWidth = 5.0;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(800, 600);
+        ctx.stroke();
+
+
+        //Lets draw some lines
+        ctx.strokeStyle = "Black";
+        ctx.lineWidth = 5.0;
+        ctx.beginPath();
+        ctx.moveTo(800, 0);
+        ctx.lineTo(canvas.width / 2 + 25, canvas.height / 2 - 25);
+        ctx.lineTo(canvas.width / 2 + 25, canvas.height / 2 + 25);
+        ctx.lineTo(canvas.width / 2 - 25, canvas.height / 2 + 25);
+        ctx.lineTo(canvas.width / 2 - 25, canvas.height / 2 - 25);
+        ctx.lineTo(canvas.width / 2 + 25, canvas.height / 2 - 25);
+        ctx.stroke();
+
+        //Lets draw a circle
+        ctx.beginPath();
+        ctx.arc(200,300, 100, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+
+
+         //Lets draw a circle again
+         ctx.fillStyle = "yellow"
+         ctx.lineWidth = 1.0;
+        ctx.beginPath();
+        ctx.arc(600,300, 100, 45 * (Math.PI/180), 315 * Math.PI/180);
+        ctx.lineTo(600,300);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+    </script>
+</body>
+
+</html>
