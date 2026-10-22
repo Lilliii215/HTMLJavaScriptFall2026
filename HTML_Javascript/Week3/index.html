@@ -80,20 +80,35 @@
 
         //Lets draw a circle
         ctx.beginPath();
-        ctx.arc(200,300, 100, 0, 2 * Math.PI);
+        ctx.arc(200, 300, 100, 0, 2 * Math.PI);
         ctx.fill();
         ctx.stroke();
 
 
-         //Lets draw a circle again
-         ctx.fillStyle = "yellow"
-         ctx.lineWidth = 1.0;
+        //Lets draw a circle again
+        ctx.fillStyle = "yellow"
+        ctx.lineWidth = 1.0;
         ctx.beginPath();
-        ctx.arc(600,300, 100, 45 * (Math.PI/180), 315 * Math.PI/180);
-        ctx.lineTo(600,300);
+        ctx.arc(600, 300, 100, 45 * (Math.PI / 180), 315 * Math.PI / 180);
+        ctx.lineTo(600, 300);
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
+
+        function degreesToRadians(degrees) {
+            let  radian = degrees * (Math.PI / 180)
+            return radian;
+        }
+
+        function drawCircle(xPos, YPs, radius, starAngle, endAngle) {
+            ctx.beginPath();
+            ctx.arc(xPos, yPos, radius, degreesToRadians(startAngle), degreesToRadians(endAngle));
+            ctx.fill();
+            ctx.stroke();
+            console.log("Circle");
+        }
+
+        drawCircle(10,10, 10, 0, 360);
     </script>
 </body>
 
