@@ -1,10 +1,3 @@
-//alert("Welcome to the Lab");
-/*
-Allows you to comment multiple lines of code
-Week 4 Lab - Experimenting with canvas animation
-*/
-
-
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
@@ -35,13 +28,15 @@ function createStar(){
 
 
 var starCount = 50;
-var stars = [];//Creates an array
+var stars = [];
+//Creates an array
 
 for(var i = 0; i < starCount; i++){
     stars[i] = createStar();
     stars[i].x = Math.random() * canvas.width;
     stars[i].y = Math.random() * canvas.height;
-    stars[i].radius = Math.random() * 25;
+    stars[i].radius = Math.random() * 5;
+    stars[i].color = "white";
 
 }
 
@@ -87,9 +82,10 @@ document.addEventListener("keyup", function(e){
     }
 });
 
-//This is our Game Loop Function
+
+
+
 function game(){
-    //clear the screen
     ctx.clearRect(0,0,canvas.width,canvas.height);
     startPoint.x += moveDirection.x;
     startPoint.y += moveDirection.y;
@@ -110,7 +106,7 @@ function game(){
         shipSprite.y += 1
     }
 
-    // if ship is off the right side of the screen make it come out the other side
+    // if ship is off to side of the screen make it come out the other side
     if(shipSprite.x >  canvas.width){
         shipSprite.x = -25;
     }
@@ -130,12 +126,20 @@ function game(){
         moveDirection.x *= -1;
         boxColor = `rgb(${Math.random()*255},${Math.random()*255},${Math.random()*255})`;
     }
-
+    //Draws Background
+    ctx.fillStyle = "black";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    //Draws Stars
     for(var i = 0; i < stars.length; i++){
-        //draw all the stars
+        //draw all stars
         stars[i].drawCircle();
+        stars[i].y++;
+        if(stars[i].y > canvas.height + stars[i].radius *2){
+            stars[i].x = Math.random() * canvas.width;
+            stars[i].y = -(Math.random() * canvas.height);
+        }
     }
-
+    //Draws Ship and box
     ctx.fillStyle = boxColor;
     ctx.fillRect(startPoint.x, startPoint.y, 25,25);
     ctx.drawImage(shipSprite.image, shipSprite.x, shipSprite.y, 25,25);
