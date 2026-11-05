@@ -77,7 +77,7 @@ function main()
 {
     //erases the screen
     ctx.clearRect(0,0,c.width,c.height); 
-
+    
     //moves the player if the variables in the controls.js are equal to true
     if(d==true){ avatar.x += avatar.vx; }
     if(a==true){ avatar.x += -avatar.vx;}
