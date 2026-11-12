@@ -142,7 +142,22 @@ document.addEventListener("keyup", function(e){
     }
 });
 
-
+//event for buttonclick
+canvas.addEventListener("click", function(e){
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = (e.clientX - rect.left) * canvas.width/ rect.width;
+    const mouseY = (e.clientY - rect.top) * canvas.height/ rect.height;
+    console.log(mouseX, mouseY)
+    if(states ! = "game" &&
+        mouseX >= canvas.width/2 - 100 &&
+        mouseX <= canvas.width/2 + 100 &&
+        mouseY >= canvas.height/2 + 100 &&
+        mouseY <= canvas.height/2 + 100 
+    ){
+        startCooldown = 100;
+        switchScenes("game");
+    }
+});
 
 // Game loop
 function game() {
