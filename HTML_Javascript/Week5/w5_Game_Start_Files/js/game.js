@@ -1,15 +1,3 @@
-/*-------------------------------------------
-Game Setup
- 1. canvas 
- 2. context
- 3. frame rate
- 4. animation timer runs main function 60 frames per second
--------------------------------------------*/
-
-
-
-
-
 /*
 START PROGRAM
 
@@ -19,7 +7,7 @@ START PROGRAM
 
     Player Clicks Start Button
 
-    If button is clicked starts game 
+    If button is clicked starts game
 
         START GAME
 
@@ -65,17 +53,13 @@ START PROGRAM
 
     End While
 
-END GAME*/
+END GAME
+*/
 
-
-
-
-// START PROGRAM
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-// Make scaled character images smoother
 ctx.imageSmoothingEnabled = true;
 ctx.imageSmoothingQuality = "high";
 
@@ -96,7 +80,7 @@ var friction = 0.9;
 
 var states = "title";
 
-// Keyboard controls
+// Controls
 var a = false;
 var d = false;
 var w = false;
@@ -110,38 +94,46 @@ var civilianImage = document.getElementById("dudes");
 var keeperImage = document.getElementById("keeper");
 
 var spitSound = new Audio("audio/velcro-strap-2.mp3");
-var keeperDie = new Audio("audio/man-scream-01.mp3");
+var civilianHitSound = new Audio("audio/Week5_audio_man-scream-01.mp3");
+var keeperDie = new Audio("audio/Week5_audio_man-scream-01.mp3");
 
-// Respawn settings
+// Respawn after 5 seconds
 var respawnTime = 5 * 60;
 
-// Player
+// PLAYER
 var alpacaSprite = {
     image: alpacaImage,
-    x: canvas.width / 2,
-    y: canvas.height / 2,
-    width: 70,
-    height: 70,
+    x: canvas.width / 2 - 95 / 2,
+    y: canvas.height / 2 - 95 / 2,
+    width: 95,
+    height: 95,
     moveX: 0,
     moveY: 0,
     direction: 1,
-    hitboxX: 12,
-    hitboxY: 10,
-    hitboxWidth: 46,
-    hitboxHeight: 55
+    hitboxX: 15,
+    hitboxY: 14,
+    hitboxWidth: 69,
+    hitboxHeight: 72
 };
 
-// Create civilians
+// CIVILIANS
 function createDudes() {
     return {
         image: civilianImage,
-        x: Math.random() * (canvas.width - 65),
-        y: Math.random() * (canvas.height - 75),
-        width: 65,
-        height: 75,
+        x: Math.random() * (canvas.width - 85),
+        y: Math.random() * (canvas.height - 98),
+        width: 85,
+        height: 98,
         moveX: (Math.random() * 2 - 1) * 0.8,
         moveY: (Math.random() * 2 - 1) * 0.8,
         direction: 1,
+
+        // Updated civilian hitbox
+        hitboxX: 11,
+        hitboxY: 8,
+        hitboxWidth: 63,
+        hitboxHeight: 86,
+
         active: true,
         respawnTimer: 0
     };
@@ -154,21 +146,24 @@ for (var i = 0; i < dudesCount; i++) {
     dudes.push(createDudes());
 }
 
-// Create zookeepers
+// ZOOKEEPERS
 function createKeepers() {
     return {
         image: keeperImage,
-        x: rand(0, canvas.width - 75),
-        y: rand(0, canvas.height - 75),
-        width: 75,
-        height: 75,
+        x: rand(0, canvas.width - 100),
+        y: rand(0, canvas.height - 100),
+        width: 100,
+        height: 100,
         moveX: randomNegOneAndOne() * 0.7,
         moveY: randomNegOneAndOne() * 0.7,
         direction: 1,
-        hitboxX: 15,
-        hitboxY: 10,
-        hitboxWidth: 45,
-        hitboxHeight: 58,
+
+        // Updated zookeeper hitbox
+        hitboxX: 17,
+        hitboxY: 11,
+        hitboxWidth: 66,
+        hitboxHeight: 82,
+
         active: true,
         respawnTimer: 0
     };
@@ -181,7 +176,7 @@ for (var i = 0; i < numberofKeepers; i++) {
     keepers.push(createKeepers());
 }
 
-// Keyboard events
+// KEYBOARD CONTROLS
 document.addEventListener("keydown", function(e) {
     var key = e.key.toLowerCase();
 
@@ -212,31 +207,67 @@ document.addEventListener("keyup", function(e) {
     if (key === "enter") enter = false;
 });
 
-// Allow the Start Game button to be clicked
+// CLICK MENU, START, BACK, AND RESTART BUTTONS
 canvas.addEventListener("click", function(e) {
     var rect = canvas.getBoundingClientRect();
 
     var mouseX = (e.clientX - rect.left) *
         (canvas.width / rect.width);
-
     var mouseY = (e.clientY - rect.top) *
         (canvas.height / rect.height);
 
-    var buttonX = canvas.width / 2 - 100;
-    var buttonY = canvas.height / 2 + 100;
+    var centerX = canvas.width / 2;
 
+    // Home screen buttons
+    if (states === "title") {
+        // START GAME button
+        if (
+            mouseX >= centerX - 110 &&
+            mouseX <= centerX + 110 &&
+            mouseY >= canvas.height / 2 + 90 &&
+            mouseY <= canvas.height / 2 + 150
+        ) {
+            startGame();
+            return;
+        }
+
+        // INSTRUCTIONS button
+        if (
+            mouseX >= centerX - 110 &&
+            mouseX <= centerX + 110 &&
+            mouseY >= canvas.height / 2 + 165 &&
+            mouseY <= canvas.height / 2 + 225
+        ) {
+            states = "instructions";
+            return;
+        }
+    }
+
+    // Back button on the instructions screen
     if (
-        (states === "title" || states === "over" || states === "win") &&
-        mouseX >= buttonX &&
-        mouseX <= buttonX + 200 &&
-        mouseY >= buttonY &&
-        mouseY <= buttonY + 80
+        states === "instructions" &&
+        mouseX >= centerX - 110 &&
+        mouseX <= centerX + 110 &&
+        mouseY >= canvas.height / 2 + 180 &&
+        mouseY <= canvas.height / 2 + 240
+    ) {
+        states = "title";
+        return;
+    }
+
+    // Restart buttons on the game-over and win screens
+    if (
+        (states === "over" || states === "win") &&
+        mouseX >= centerX - 100 &&
+        mouseX <= centerX + 100 &&
+        mouseY >= canvas.height / 2 + 100 &&
+        mouseY <= canvas.height / 2 + 180
     ) {
         startGame();
     }
 });
 
-// Start or restart the game
+// START OR RESTART GAME
 function startGame() {
     score = 0;
     timeLeft = 120;
@@ -245,8 +276,8 @@ function startGame() {
     shootCooldown = 0;
     startCooldown = 60;
 
-    alpacaSprite.x = canvas.width / 2;
-    alpacaSprite.y = canvas.height / 2;
+    alpacaSprite.x = canvas.width / 2 - alpacaSprite.width / 2;
+    alpacaSprite.y = canvas.height / 2 - alpacaSprite.height / 2;
     alpacaSprite.moveX = 0;
     alpacaSprite.moveY = 0;
 
@@ -265,7 +296,7 @@ function startGame() {
     states = "game";
 }
 
-// Main game function
+// MAIN GAME FUNCTION
 function game() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -278,6 +309,10 @@ function game() {
             playGame();
             break;
 
+        case "instructions":
+            displayInstructionsScreen();
+            break;
+
         case "over":
             displayGameOver();
             break;
@@ -288,7 +323,7 @@ function game() {
     }
 }
 
-// Home screen
+// HOME SCREEN
 function displayTitleScreen() {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -301,21 +336,21 @@ function displayTitleScreen() {
     ctx.fillText(
         titleText,
         canvas.width / 2 - ctx.measureText(titleText).width / 2,
-        canvas.height / 2 - 20
+        canvas.height / 2 - 90
     );
 
     ctx.font = "16px Arial";
 
-    var instructionText =
-        "Escape the zoo! Use W, A, S, D to move and SPACE to spit.";
+    var instructionText = "You are an alpaca trying to escape the zoo! Good luck!";
 
     ctx.fillText(
         instructionText,
         canvas.width / 2 - ctx.measureText(instructionText).width / 2,
-        canvas.height / 2 + 40
+        canvas.height / 2 - 35
     );
 
-    drawButton("START GAME");
+    drawMenuButton("START GAME", canvas.height / 2 + 90);
+    drawMenuButton("INSTRUCTIONS", canvas.height / 2 + 165);
 
     if (enter) {
         enter = false;
@@ -323,9 +358,74 @@ function displayTitleScreen() {
     }
 }
 
-// Main gameplay
+// INSTRUCTIONS SCREEN
+function displayInstructionsScreen() {
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "white";
+    ctx.font = "42px Arial";
+
+    var heading = "INSTRUCTIONS";
+
+    ctx.fillText(
+        heading,
+        canvas.width / 2 - ctx.measureText(heading).width / 2,
+        canvas.height / 2 - 145
+    );
+
+    var instructions =
+        "Use W, A, S, D to move and SPACE to spit. Zookeepers will try to capture you, spit at them to make them to gain 5 points. Spit at civilians to gain 1 point, but be careful not to get caught. In order to escape the zoo you need 50 points! Good luck!";
+
+    // Wrap text to fit the screen
+    ctx.font = "20px Arial";
+    ctx.textAlign = "center";
+
+    var words = instructions.split(" ");
+    var lines = [];
+    var line = "";
+    var maxLineWidth = Math.min(canvas.width - 100, 650);
+
+    for (var i = 0; i < words.length; i++) {
+        var testLine = line ? line + " " + words[i] : words[i];
+
+        if (ctx.measureText(testLine).width > maxLineWidth && line) {
+            lines.push(line);
+            line = words[i];
+        } else {
+            line = testLine;
+        }
+    }
+
+    if (line) {
+        lines.push(line);
+    }
+
+    var lineHeight = 34;
+    var firstLineY = canvas.height / 2 -
+        ((lines.length - 1) * lineHeight) / 2;
+
+    for (var j = 0; j < lines.length; j++) {
+        ctx.fillText(
+            lines[j],
+            canvas.width / 2,
+            firstLineY + j * lineHeight
+        );
+    }
+
+    ctx.textAlign = "left";
+
+    drawMenuButton("BACK", canvas.height / 2 + 180);
+
+    if (enter) {
+        enter = false;
+        states = "title";
+    }
+}
+
+
+// GAMEPLAY
 function playGame() {
-    // Background
     ctx.fillStyle = "green";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -333,7 +433,7 @@ function playGame() {
         startCooldown--;
     }
 
-    // Countdown timer
+    // Timer
     timeLeft -= 1 / 60;
 
     if (timeLeft <= 0) {
@@ -342,7 +442,7 @@ function playGame() {
         return;
     }
 
-    // Player movement
+    // PLAYER MOVEMENT
     if (a) alpacaSprite.moveX -= acceleration;
     if (d) alpacaSprite.moveX += acceleration;
     if (w) alpacaSprite.moveY -= acceleration;
@@ -363,7 +463,7 @@ function playGame() {
         alpacaSprite.direction = 1;
     }
 
-    // Keep player inside the canvas
+    // Keep player inside canvas
     if (alpacaSprite.x < 0) {
         alpacaSprite.x = 0;
         alpacaSprite.moveX = 0;
@@ -384,12 +484,12 @@ function playGame() {
         alpacaSprite.moveY = 0;
     }
 
-    // Spit cooldown
+    // SPIT COOLDOWN
     if (shootCooldown > 0) {
         shootCooldown--;
     }
 
-    // Shoot spit using SPACE
+    // SHOOT SPIT
     if (space && shootCooldown === 0) {
         spit.push({
             x: alpacaSprite.x + alpacaSprite.width / 2 - 2,
@@ -406,11 +506,11 @@ function playGame() {
         shootCooldown = 30;
     }
 
-    // Update civilians
+    //CIVILIANS
     for (var i = 0; i < dudes.length; i++) {
         var civilian = dudes[i];
 
-        // Handle civilian respawning
+        // Civilian respawn timer
         if (!civilian.active) {
             civilian.respawnTimer--;
 
@@ -439,7 +539,7 @@ function playGame() {
             civilian.direction = 1;
         }
 
-        // Bounce off canvas edges
+        // Civilian canvas boundaries
         if (civilian.x <= 0) {
             civilian.x = 0;
             civilian.moveX = Math.abs(civilian.moveX);
@@ -463,11 +563,11 @@ function playGame() {
         drawSprite(civilian);
     }
 
-    // Update zookeepers
+    // UPDATE ZOOKEEPERS
     for (var k = 0; k < keepers.length; k++) {
         var currentKeeper = keepers[k];
 
-        // Handle zookeeper respawning
+        // Zookeeper respawn timer
         if (!currentKeeper.active) {
             currentKeeper.respawnTimer--;
 
@@ -496,7 +596,7 @@ function playGame() {
             currentKeeper.direction = 1;
         }
 
-        // Bounce off canvas edges
+        // Zookeeper canvas boundaries
         if (currentKeeper.x < 0) {
             currentKeeper.x = 0;
             currentKeeper.moveX = Math.abs(currentKeeper.moveX);
@@ -519,7 +619,7 @@ function playGame() {
 
         drawSprite(currentKeeper);
 
-        // Game over when the custom hitboxes overlap
+        // Game over when alpaca and zookeeper hitboxes overlap
         if (
             startCooldown <= 0 &&
             rectanglesOverlap(alpacaSprite, currentKeeper)
@@ -529,13 +629,13 @@ function playGame() {
         }
     }
 
-    // Update spit and check collisions
+   
     for (var j = spit.length - 1; j >= 0; j--) {
         var bullet = spit[j];
 
         bullet.y -= bullet.speed;
 
-        // Remove spit that leaves the screen
+        // Remove spit that leaves screen
         if (bullet.y + bullet.height < 0) {
             spit.splice(j, 1);
             continue;
@@ -553,7 +653,11 @@ function playGame() {
             ) {
                 score += 1;
 
-                // Hide civilian for five seconds
+                // Play sound when spit hits civilian
+                civilianHitSound.currentTime = 0;
+                civilianHitSound.play().catch(function() {});
+
+                // Civilian disappears for 5 seconds
                 civilianTarget.active = false;
                 civilianTarget.respawnTimer = respawnTime;
 
@@ -576,7 +680,7 @@ function playGame() {
                     keeperDie.currentTime = 0;
                     keeperDie.play().catch(function() {});
 
-                    // Hide zookeeper for five seconds
+                    // Zookeeper disappears for 5 seconds
                     keeperTarget.active = false;
                     keeperTarget.respawnTimer = respawnTime;
 
@@ -601,23 +705,23 @@ function playGame() {
         );
     }
 
-    // Draw player
+  
     drawSprite(alpacaSprite);
 
-    // Display score and timer
+    // SCORE AND TIMER
     ctx.fillStyle = "white";
     ctx.font = "24px Arial";
 
     ctx.fillText("Score: " + score, 20, 35);
     ctx.fillText("Time: " + Math.ceil(timeLeft), 20, 65);
 
-    // Check winning score
+
     if (score >= winningScore) {
         states = "win";
     }
 }
 
-// Draw a button
+// DRAW BUTTON
 function drawButton(text) {
     ctx.fillStyle = "pink";
 
@@ -638,7 +742,26 @@ function drawButton(text) {
     );
 }
 
-// Game over screen
+//HOME SCREEN AND INSTRUCTIONS BUTTONS
+function drawMenuButton(text, y) {
+    var buttonWidth = 220;
+    var buttonHeight = 60;
+    var buttonX = canvas.width / 2 - buttonWidth / 2;
+
+    ctx.fillStyle = "pink";
+    ctx.fillRect(buttonX, y, buttonWidth, buttonHeight);
+
+    ctx.fillStyle = "black";
+    ctx.font = "22px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, canvas.width / 2, y + buttonHeight / 2);
+
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+}
+
+// GAME OVER SCREEN
 function displayGameOver() {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -658,8 +781,7 @@ function displayGameOver() {
 
     ctx.font = "18px Arial";
 
-    var instruction =
-        "Press ENTER or click below to play again";
+    var instruction = "Press ENTER or click below to play again";
 
     ctx.fillText(
         instruction,
@@ -675,7 +797,7 @@ function displayGameOver() {
     }
 }
 
-// Winning screen
+// WIN SCREEN
 function displayWinScreen() {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -703,8 +825,7 @@ function displayWinScreen() {
 
     ctx.font = "18px Arial";
 
-    var instruction =
-        "Press ENTER or click below to play again";
+    var instruction = "Press ENTER or click below to play again";
 
     ctx.fillText(
         instruction,
@@ -720,7 +841,6 @@ function displayWinScreen() {
     }
 }
 
-// Draw characters and flip their images
 function drawSprite(sprite) {
     ctx.save();
 
@@ -780,17 +900,17 @@ function drawSprite(sprite) {
     ctx.restore();
 }
 
-// Get a custom hitbox when one is defined
+// GET HITBOX
 function getHitbox(object) {
     return {
-        x: object.x + (object.hitboxX || 0),
-        y: object.y + (object.hitboxY || 0),
-        width: object.hitboxWidth || object.width,
-        height: object.hitboxHeight || object.height
+        x: object.x + (object.hitboxX ?? 0),
+        y: object.y + (object.hitboxY ?? 0),
+        width: object.hitboxWidth ?? object.width,
+        height: object.hitboxHeight ?? object.height
     };
 }
 
-// Rectangle collision detection
+
 function rectanglesOverlap(first, second) {
     var firstBox = getHitbox(first);
     var secondBox = getHitbox(second);
@@ -803,19 +923,14 @@ function rectanglesOverlap(first, second) {
     );
 }
 
-// Switch game scenes
 function switchScenes(nameOfScene) {
     states = nameOfScene;
 }
 
-// Random number helper
 function rand(_low, _high) {
     return Math.random() * (_high - _low) + _low;
 }
 
-// Random direction helper
 function randomNegOneAndOne() {
     return Math.random() > 0.5 ? 1 : -1;
 }
-
-// END PROGRAM
